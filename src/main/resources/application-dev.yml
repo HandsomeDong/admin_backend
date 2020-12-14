@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/manager?characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT
+    username: root
+    password: 123yhd.
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  typeAliasesPackage: com.handsomedong.manager.entity

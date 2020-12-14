@@ -1,0 +1,8 @@
+server:
+  port: 23333
+  servlet:
+    context-path: /admin
+
+spring:
+  profiles:
+    active: dev
