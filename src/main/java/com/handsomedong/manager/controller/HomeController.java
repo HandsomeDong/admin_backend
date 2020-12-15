@@ -1,7 +1,8 @@
 package com.handsomedong.manager.controller;
 
-import java.util.UUID;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.handsomedong.manager.entity.User;
 import com.handsomedong.manager.vo.Result;
 
@@ -11,11 +12,12 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.subject.Subject;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +27,27 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/")
 public class HomeController {
 
+    /**
+     * 直接抛出异常让全局异常处理器来处理
+     * @return
+     */
+    @RequestMapping("401")
+    public Result result401() {
+        throw new UnauthenticatedException("用户未登录");
+    }
+
+    @RequestMapping("403")
+    public Result result403() {
+        throw new UnauthenticatedException("权限不足");
+    }
+
     @RequestMapping(value = "login", method = RequestMethod.POST)
-    public Result login(@RequestParam String username, @RequestParam String pwd) {
+    public Result login(@RequestBody String body) {
+
+        JSONObject json = JSON.parseObject(body);
+        String username = json.getString("username");
+        String pwd = json.getString("pwd");
+
         if (!StringUtils.hasText(username)) {
             return Result.failed("用户名不能为空");
         }
@@ -41,9 +62,8 @@ public class HomeController {
             if (user == null) {
                 throw new AuthenticationException();
             }
-            return Result.ok("login").data("id", user.getId())
-                    .data("nick", user.getNick()).data("roles", user.getRoles())
-                    .data("permissions", user.getPermissions());
+            return Result.ok("login").data("id", user.getId()).data("nick", user.getNick())
+                    .data("roles", user.getRoles()).data("permissions", user.getPermissions());
         } catch (UnknownAccountException | IncorrectCredentialsException uae) {
             return Result.failed("帐号或密码不正确");
         } catch (LockedAccountException lae) {

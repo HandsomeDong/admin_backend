@@ -8,3 +8,9 @@ spring:
 mybatis-plus:
   mapper-locations: classpath:/mapper/*Mapper.xml
   typeAliasesPackage: com.handsomedong.manager.entity
+
+logging:
+  level:
+    com.handsomedong.manager: debug
+  file:
+    path: ./logs

@@ -6,6 +6,7 @@ import com.handsomedong.manager.vo.Result;
 import org.apache.shiro.ShiroException;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
  * 统一捕捉异常封装错误信息成json格式返回
  */
 @Slf4j
+@ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ShiroException.class)
@@ -33,7 +35,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseBody
-    public Result result403() {
-        return new Result(false, Codes.UNAUTHZ, "该用户无访问权限", null);
+    public Result result403(UnauthorizedException e) {
+        return new Result(false, Codes.UNAUTHZ, e.getMessage(), null);
     }
 }

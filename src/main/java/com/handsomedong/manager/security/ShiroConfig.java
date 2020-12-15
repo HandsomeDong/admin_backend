@@ -1,9 +1,13 @@
 package com.handsomedong.manager.security;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.realm.Realm;
-import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
-import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
+import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,77 +18,29 @@ public class ShiroConfig {
         return new UserRealm();
     }
 
-    // @Bean
-    // public SecurityManager securityManager() {
-    //     DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-    //     //设置realm
-    //     securityManager.setRealm(realm());
-    //     securityManager.setCacheManager(cacheManager());
-    //     securityManager.setSessionManager(sessionManager());
-    //     return securityManager;
-    // }
-    //
-    // /**
-    //  * Session Manager
-    //  * 使用的是shiro-redis开源插件
-    //  */
-    // private DefaultWebSessionManager sessionManager() {
-    //     DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
-    //     sessionManager.setSessionDAO(redisSessionDAO());
-    //     return sessionManager;
-    // }
-    //
-    // /**
-    //  * RedisSessionDAO shiro sessionDao层的实现 通过redis
-    //  * 使用的是shiro-redis开源插件
-    //  */
-    // private RedisSessionDAO redisSessionDAO() {
-    //     RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
-    //     redisSessionDAO.setRedisManager(redisManager());
-    //     return redisSessionDAO;
-    // }
-    //
-    // /**
-    //  * cacheManager 缓存 redis实现
-    //  * 使用的是shiro-redis开源插件
-    //  *
-    //  * @return RedisCacheManager
-    //  */
-    // private RedisCacheManager cacheManager() {
-    //     RedisCacheManager redisCacheManager = new RedisCacheManager();
-    //     redisCacheManager.setRedisManager(redisManager());
-    //     return redisCacheManager;
-    // }
-    //
-    // /**
-    //  * 配置shiro redisManager
-    //  * 使用的是shiro-redis开源插件
-    //  *
-    //  * @return RedisManager
-    //  */
-    // @Bean
-    // public RedisManager redisManager() {
-    //     RedisManager redisManager = new RedisManager();
-    //     //        RedisManager redisManager = new RedisManager();
-    //     //        redisManager.setHost(host);
-    //     //        redisManager.setPort(port);
-    //     //        // 配置缓存过期时间
-    //     //        redisManager.setExpire(expireTime);
-    //     //        redisManager.setTimeout(timeOut);
-    //     // redisManager.setPassword(password);
-    //     return redisManager;
-    // }
+    @Bean
+    public DefaultWebSecurityManager getSecurityManager(Realm realm) {
+        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+        //设置realm
+        securityManager.setRealm(realm);
+        SecurityUtils.setSecurityManager(securityManager);
+        return securityManager;
+    }
 
     @Bean
-    public ShiroFilterChainDefinition shiroFilterChainDefinition() {
-        DefaultShiroFilterChainDefinition chain = new DefaultShiroFilterChainDefinition();
-        //可以匿名访问的url
-        chain.addPathDefinition("/login", "anon");
-        chain.addPathDefinition("/logout", "anon");
-        chain.addPathDefinition("/401", "anon");
-        chain.addPathDefinition("/403", "anon");
-        //其它的都需要登录
-        chain.addPathDefinition("/**", "authc");
-        return chain;
+    public ShiroFilterFactoryBean shiroFilterFactoryBean(DefaultWebSecurityManager securityManager) {
+        ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
+        shiroFilterFactoryBean.setSecurityManager(securityManager);
+
+        Map<String, String> map = new HashMap<>(5 , 1);
+        map.put("/**","authc");
+        map.put("/logout","anon");
+        map.put("/login","anon");
+        map.put("/401","anon");
+        map.put("/403","anon");
+        shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
+        shiroFilterFactoryBean.setLoginUrl("/401");     //设置登录地址为这个，实际上不是这个，只是想让它统一抛出未登录的异常
+
+        return shiroFilterFactoryBean;
     }
 }
