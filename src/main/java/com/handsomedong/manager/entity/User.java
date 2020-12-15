@@ -1,5 +1,6 @@
 package com.handsomedong.manager.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,7 +12,7 @@ import lombok.Data;
 
 @TableName("user")
 @Data
-public class User {
+public class User implements Serializable {
     private Integer id;
     private String username;
     private String nick;

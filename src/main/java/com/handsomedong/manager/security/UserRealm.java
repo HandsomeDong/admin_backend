@@ -24,7 +24,6 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.extern.slf4j.Slf4j;
@@ -103,7 +102,8 @@ public class UserRealm extends AuthorizingRealm {
 
         SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(user, user.getPwd(), username);
         if (user.getSalt() != null) {
-            simpleAuthenticationInfo.setCredentialsSalt(ByteSource.Util.bytes(user.getSalt()));
+            // simpleAuthenticationInfo.setCredentialsSalt(ByteSource.Util.bytes(user.getSalt()));
+            simpleAuthenticationInfo.setCredentialsSalt(new MySimpleByteSource(user.getSalt()));
         }
 
         return simpleAuthenticationInfo;

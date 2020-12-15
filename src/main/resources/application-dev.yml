@@ -5,6 +5,15 @@ spring:
     username: root
     password: 123yhd.
 
+  redis:
+    host: 127.0.0.1
+    jedis:
+      pool:
+        min-idle: 5
+        max-active: 20
+        max-idle: 15
+
+
 mybatis-plus:
   mapper-locations: classpath:/mapper/*Mapper.xml
   typeAliasesPackage: com.handsomedong.manager.entity

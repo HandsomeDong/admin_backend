@@ -51,7 +51,7 @@
     <dependency>
       <groupId>org.apache.shiro</groupId>
       <artifactId>shiro-spring-boot-web-starter</artifactId>
-      <version>1.4.0</version>
+      <version>1.5.0</version>
     </dependency>
 
 <!--    &lt;!&ndash; shiro+redis缓存插件 &ndash;&gt;-->
@@ -66,6 +66,22 @@
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.crazycake</groupId>
+      <artifactId>shiro-redis</artifactId>
+      <version>3.1.0</version>
+      <!--    里面这个shiro-core版本较低，会引发一个异常
+    ClassNotFoundException: org.apache.shiro.event.EventBus
+              需要排除，直接使用上面的shiro
+              shiro1.3 加入了时间总线。-->
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.shiro</groupId>
+          <artifactId>shiro-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- mybatis plus -->

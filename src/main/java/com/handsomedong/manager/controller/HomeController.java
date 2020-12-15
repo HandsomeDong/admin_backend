@@ -1,6 +1,8 @@
 package com.handsomedong.manager.controller;
 
 
+import java.io.Serializable;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.handsomedong.manager.entity.User;
@@ -15,9 +17,9 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.subject.Subject;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +43,7 @@ public class HomeController {
         throw new UnauthenticatedException("权限不足");
     }
 
-    @RequestMapping(value = "login", method = RequestMethod.POST)
+    @PostMapping(value = "login")
     public Result login(@RequestBody String body) {
 
         JSONObject json = JSON.parseObject(body);
@@ -62,13 +64,13 @@ public class HomeController {
             if (user == null) {
                 throw new AuthenticationException();
             }
-            return Result.ok("login").data("id", user.getId()).data("nick", user.getNick())
+            Serializable token = subject.getSession().getId();
+            return Result.ok("login").data("token", token).data("id", user.getId()).data("nick", user.getNick())
                     .data("roles", user.getRoles()).data("permissions", user.getPermissions());
         } catch (UnknownAccountException | IncorrectCredentialsException uae) {
             return Result.failed("帐号或密码不正确");
         } catch (LockedAccountException lae) {
             return Result.failed("帐号已被锁定");
-
         } catch (AuthenticationException ae) {
             return Result.failed("登录失败：" + ae.getMessage());
         }
