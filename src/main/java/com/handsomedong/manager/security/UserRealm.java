@@ -107,6 +107,6 @@ public class UserRealm extends AuthorizingRealm {
             simpleAuthenticationInfo.setCredentialsSalt(ByteSource.Util.bytes(user.getSalt()));
         }
 
-        return null;
+        return simpleAuthenticationInfo;
     }
 }
